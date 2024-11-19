@@ -1,0 +1,309 @@
+{
+	"info": {
+		"_postman_id": "d0ac320f-9b6a-478b-b154-976688329d26",
+		"name": "HW_3",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "39795693"
+	},
+	"item": [
+		{
+			"name": "/login",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.environment.set(\"authToken\", pm.response.json().token);"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{authToken}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "urlencoded",
+					"urlencoded": [
+						{
+							"key": "login",
+							"value": "aksiniya",
+							"type": "text"
+						},
+						{
+							"key": "password",
+							"value": "55555",
+							"type": "text"
+						}
+					]
+				},
+				"url": {
+					"raw": "http://162.55.220.72:5005/login",
+					"protocol": "http",
+					"host": [
+						"162",
+						"55",
+						"220",
+						"72"
+					],
+					"port": "5005",
+					"path": [
+						"login"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "/user_info",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Статус код 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Структура ответа корректна\", function () {\r",
+							"    let jsonData = pm.response.json();\r",
+							"\r",
+							"    pm.expect(jsonData).to.have.all.keys(\r",
+							"        'start_qa_salary',\r",
+							"        'qa_salary_after_6_months',\r",
+							"        'qa_salary_after_12_months',\r",
+							"        'person'\r",
+							"    );\r",
+							"\r",
+							"pm.expect(jsonData.person).to.have.all.keys('u_name', 'u_age', 'u_salary_1.5_year');\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Извлечение u_salary_1.5_year\", function () {\r",
+							"    let jsonData = pm.response.json();\r",
+							"    let salary_1_5_year = jsonData.person.u_salary_1_5_year;\r",
+							"\r",
+							"    pm.environment.set(\"u_salary_1_5_year\", salary_1_5_year);\r",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"age\": 33,\r\n    \"salary\": 200000,\r\n    \"name\": \"Vitaliy\",\r\n    \"auth_token\": \"/s34lfgbj/aksiniya/jjd909/64410kjkWpqc350155555424782evny\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://162.55.220.72:5005/user_info",
+					"protocol": "http",
+					"host": [
+						"162",
+						"55",
+						"220",
+						"72"
+					],
+					"port": "5005",
+					"path": [
+						"user_info"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "/get_test_user",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"salary\": 800000\r\n}    ",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://162.55.220.72:5005/get_test_user",
+					"protocol": "http",
+					"host": [
+						"162",
+						"55",
+						"220",
+						"72"
+					],
+					"port": "5005",
+					"path": [
+						"get_test_user"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "/new_data",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Статус код 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Структура ответа корректна\", function () {\r",
+							"    let jsonData = pm.response.json();\r",
+							"\r",
+							"    pm.expect(jsonData).to.have.all.keys(\r",
+							"        'name',\r",
+							"        'age',\r",
+							"        'salary'\r",
+							"    );\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Проверка коэффициентов множителей зарплаты\", function () {\r",
+							"    let jsonData = pm.response.json();\r",
+							"    let salary = jsonData.salary[0];\r",
+							"\r",
+							"    pm.expect(parseFloat(jsonData.salary[1])).to.eql(salary[2]);\r",
+							"    pm.expect(parseFloat(jsonData.salary[2])).to.eql(salary[3]);\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Проверка, что 2-й элемент salary больше 0-го и 1-го\", function () {\r",
+							"    let jsonData = pm.response.json();\r",
+							"    let salary0 = parseFloat(jsonData.salary[0]);\r",
+							"    let salary1 = parseFloat(jsonData.salary[1]);\r",
+							"    let salary2 = parseFloat(jsonData.salary[2]);\r",
+							"\r",
+							"    pm.expect(salary1).to.be.greaterThan(salary0);\r",
+							"    pm.expect(salary2).to.be.greaterThan(salary0);\r",
+							"    pm.expect(salary1).to.be.greaterThan(salary2); \r",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"age\": 27,\r\n    \"salary\": 15000,\r\n    \"name\": \"Alice\",\r\n    \"auth_token\": \"/s34lfgbj/aksiniya/jjd909/64410kjkWpqc350155555424782evny\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://162.55.220.72:5005/new_data",
+					"protocol": "http",
+					"host": [
+						"162",
+						"55",
+						"220",
+						"72"
+					],
+					"port": "5005",
+					"path": [
+						"new_data"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "/test_pet_info",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Статус код 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Структура ответа корректна\", function () {\r",
+							"    let jsonData = pm.response.json();\r",
+							"\r",
+							"    pm.expect(jsonData).to.have.all.keys(\r",
+							"        'name',\r",
+							"        'age',\r",
+							"        'daily_food',\r",
+							"        'daily_sleep'\r",
+							"    );\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Проверка правильности расчета daily_food и daily_sleep\", function () {\r",
+							"    let jsonData = pm.response.json();\r",
+							"    let weight = 20;\r",
+							"\r",
+							"    pm.expect(jsonData.daily_food).to.eql(weight[0.012]);\r",
+							"    pm.expect(jsonData.daily_sleep).to.eql(weight[2.5]);\r",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"age\": 27,\r\n    \"salary\": 15000,\r\n    \"name\": \"Alice\",\r\n    \"auth_token\": \"/s34lfgbj/aksiniya/jjd909/64410kjkWpqc350155555424782evny\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://162.55.220.72:5005/test_pet_info",
+					"protocol": "http",
+					"host": [
+						"162",
+						"55",
+						"220",
+						"72"
+					],
+					"port": "5005",
+					"path": [
+						"test_pet_info"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
